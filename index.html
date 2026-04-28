@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MarsaTv — Modern CSS Utilities</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        * { scroll-behavior: smooth; }
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: #020617;
+            color: #e2e8f0;
+            overflow-x: hidden;
+        }
+
+        .bg-mesh {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            background:
+                radial-gradient(ellipse 80% 50% at 20% 40%, rgba(99, 102, 241, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse 60% 40% at 80% 60%, rgba(236, 72, 153, 0.06) 0%, transparent 50%),
+                radial-gradient(ellipse 50% 50% at 50% 50%, rgba(59, 130, 246, 0.04) 0%, transparent 50%);
+            animation: meshFloat 20s ease-in-out infinite alternate;
+        }
+
+        @keyframes meshFloat {
+            0% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -20px) scale(1.05); }
+            66% { transform: translate(-20px, 30px) scale(0.95); }
+            100% { transform: translate(10px, 10px) scale(1); }
+        }
+
+        .glass-card {
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass-card:hover {
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            transform: translateY(-6px);
+        }
+
+        .service-icon {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(236, 72, 153, 0.2));
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .code-block {
+            background: #0b0f1a;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .code-block::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.4), rgba(236, 72, 153, 0.4), transparent);
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none; appearance: none;
+            height: 6px; background: rgba(255, 255, 255, 0.08);
+            border-radius: 3px; outline: none;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none; appearance: none;
+            width: 18px; height: 18px; border-radius: 50%;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            cursor: pointer; box-shadow: 0 0 12px rgba(99, 102, 241, 0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2); box-shadow: 0 0 20px rgba(99, 102, 241, 0.6);
+        }
+        input[type="range"]::-moz-range-thumb {
+            width: 18px; height: 18px; border-radius: 50%;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            cursor: pointer; border: none; box-shadow: 0 0 12px rgba(99, 102, 241, 0.4);
+        }
+
+        input[type="color"] {
+            -webkit-appearance: none; appearance: none;
+            border: none; border-radius: 10px; overflow: hidden; cursor: pointer; padding: 0;
+        }
+        input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+        input[type="color"]::-webkit-color-swatch { border: 2px solid rgba(255, 255, 255, 0.1); border-radius: 10px; }
+
+        select {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #e2e8f0; border-radius: 10px;
+            padding: 10px 14px; outline: none; transition: all 0.3s; cursor: pointer;
+        }
+        select:focus { border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15); }
+        select option { background: #1e293b; color: #e2e8f0; }
+
+        .copy-btn {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            position: relative; overflow: hidden; transition: all 0.3s;
+        }
+        .copy-btn::before {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.2), transparent);
+            opacity: 0; transition: opacity 0.3s;
+        }
+        .copy-btn:hover::before { opacity: 1; }
+        .copy-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4); }
+        .copy-btn:active { transform: translateY(0); }
+
+        .preview-glow { position: relative; }
+        .preview-glow::before {
+            content: ''; position: absolute; inset: -20px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 70%);
+            z-index: -1; pointer-events: none;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in-up { animation: fadeInUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+
+        .value-badge {
+            background: rgba(99, 102, 241, 0.15); color: #a5b4fc;
+            padding: 2px 10px; border-radius: 20px;
+            font-size: 0.75rem; font-weight: 600; font-family: 'JetBrains Mono', monospace;
+        }
+
+        .section-label {
+            font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.15em;
+            color: #64748b; font-weight: 700;
+        }
+
+        .tool-view { display: none; }
+        .tool-view.active { display: block; animation: fadeInUp 0.4s ease forwards; }
+
+        .home-view { display: block; }
+        .home-view.hidden { display: none; }
+
+        .back-btn {
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.3s;
+        }
+        .back-btn:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); }
+
+        .toggle-btn {
+            padding: 6px 16px; border-radius: 8px; font-size: 0.85rem; font-weight: 500;
+            transition: all 0.3s; cursor: pointer; border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.05); color: #94a3b8;
+        }
+        .toggle-btn.active {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white; border-color: transparent;
+        }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+        .text-input {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #e2e8f0; border-radius: 10px;
+            padding: 10px 14px; outline: none; transition: all 0.3s; width: 100%;
+        }
+        .text-input:focus { border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15); }
+        .text-input::placeholder { color: #64748b; }
+    </style>
+</head>
+<body class="min-h-screen">
+    <div class="bg-mesh"></div>
+
+    <!-- Header -->
+    <header class="sticky top-0 z-50 glass-card border-b border-white/5">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-3 cursor-pointer" onclick="goHome()">
+                    <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-pink-500 flex items-center justify-center shadow-lg shadow-indigo-500/20">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
+                        </svg>
+                    </div>
+                    <span class="text-xl font-bold tracking-tight text-white">Marsatv<span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-pink-400">Toolbox</span></span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+
+        <!-- HOME VIEW -->
+        <div id="home-view" class="home-view">
+            <div class="text-center mb-12 animate-fade-in-up">
+                <h1 class="text-4xl md:text-5xl font-black text-white mb-4 tracking-tight">CSS Utilities for <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-pink-400">Developers</span></h1>
+                <p class="text-gray-400 text-lg max-w-2xl mx-auto">A curated collection of modern CSS generators. Pick a tool below and craft beautiful styles in seconds.</p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <!-- Box Shadow -->
+                <div onclick="openTool('box-shadow-tool')" class="glass-card rounded-2xl p-6 cursor-pointer group animate-fade-in-up" style="animation-delay: 0.05s">
+                    <div class="service-icon w-14 h-14 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                        <svg class="w-7 h-7 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                    </div>
+                    <h3 class="text-lg font-bold text-white mb-1">Box Shadow</h3>
+                    <p class="text-sm text-gray-400">Generate layered drop shadows with full color and opacity control. Supports image preview.</p>
+                </div>
+
+                <!-- Gradient -->
+                <div onclick="openTool('gradient-tool')" class="glass-card rounded-2xl p-6 cursor-pointer group animate-fade-in-up" style="animation-delay: 0.1s">
+                    <div class="service-icon w-14 h-14 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                        <svg class="w-7 h-7 text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/></svg>
+                    </div>
+                    <h3 class="text-lg font-bold text-white mb-1">Gradient</h3>
+                    <p class="text-sm text-gray-400">Create linear and radial gradients with precise direction and color blending.</p>
+                </div>
+
+                <!-- Border Radius -->
+                <div onclick="openTool('border-radius-tool')" class="glass-card rounded-2xl p-6 cursor-pointer group animate-fade-in-up" style="animation-delay: 0.15s">
+                    <div class="service-icon w-14 h-14 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                        <svg class="w-7 h-7 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>
+                    </div>
+                    <h3 class="text-lg font-bold text-white mb-1">Border Radius</h3>
+                    <p class="text-sm text-gray-400">Fine-tune each corner independently. From sharp edges to smooth organic shapes.</p>
+                </div>
+
+                <!-- Text Shadow -->
+                <div onclick="openTool('text-shadow-tool')" class="glass-card rounded-2xl p-6 cursor-pointer group animate-fade-in-up" style="animation-delay: 0.2s">
+                    <div class="service-icon w-14 h-14 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                        <svg class="w-7 h-7 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                    </div>
+                    <h3 class="text-lg font-bold text-white mb-1">Text Shadow</h3>
+                    <p class="text-sm text-gray-400">Add depth to typography with customizable blur, offset, and color shadows.</p>
+                </div>
+
+                <!-- Glassmorphism -->
+                <div onclick="openTool('glassmorphism-tool')" class="glass-card rounded-2xl p-6 cursor-pointer group animate-fade-in-up" style="animation-delay: 0.25s">
+                    <div class="service-icon w-14 h-14 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                        <svg class="w-7 h-7 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>
+                    </div>
+                    <h3 class="text-lg font-bold text-white mb-1">Glassmorphism</h3>
+                    <p class="text-sm text-gray-400">Design frosted glass UI elements with blur, saturation, and border controls.</p>
+                </div>
+
+                <!-- Transform -->
+                <div onclick="openTool('transform-tool')" class="glass-card rounded-2xl p-6 cursor-pointer group animate-fade-in-up" style="animation-delay: 0.3s">
+                    <div class="service-icon w-14 h-14 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                        <svg class="w-7 h-7 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                    </div>
+                    <h3 class="text-lg font-bold text-white mb-1">Transform</h3>
+                    <p class="text-sm text-gray-400">Rotate, scale, skew, and translate elements with real-time 2D transformation preview.</p>
+                </div>
+
+                <!-- Filter -->
+                <div onclick="openTool('filter-tool')" class="glass-card rounded-2xl p-6 cursor-pointer group animate-fade-in-up" style="animation-delay: 0.35s">
+                    <div class="service-icon w-14 h-14 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                        <svg class="w-7 h-7 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/></svg>
+                    </div>
+                    <h3 class="text-lg font-bold text-white mb-1">Filter</h3>
+                    <p class="text-sm text-gray-400">Apply blur, brightness, contrast, grayscale, hue-rotate, saturate, and sepia effects.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- TOOL VIEWS -->
+
+        <!-- Box Shadow Tool -->
+        <div id="box-shadow-tool" class="tool-view">
+            <div class="flex items-center gap-4 mb-6">
+                <button onclick="goHome()" class="back-btn flex items-center gap-2 px-4 py-2 rounded-xl text-sm text-gray-300">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                    Back
+                </button>
+                <h2 class="text-2xl font-bold text-white">Box Shadow</h2>
+            </div>
+            <div class="glass-card rounded-2xl overflow-hidden flex flex-col lg:flex-row">
+                <div class="w-full lg:w-5/12 p-8 border-b lg:border-b-0 lg:border-r border-white/5">
+                    <div class="section-label mb-2">Shadow Generator</div>
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-400 mb-3">Preview Mode</label>
+                            <div class="flex gap-2">
+                                <button onclick="setBsMode('color')" id="bs-mode-color" class="toggle-btn active">Solid Color</button>
+                                <button onclick="setBsMode('image')" id="bs-mode-image" class="toggle-btn">Image URL</button>
+                            </div>
+                        </div>
+                        <div id="bs-color-section">
+                            <label class="block text-sm font-medium text-gray-400 mb-2">Box Color</label>
+                            <input type="color" id="boxColor" value="#6366f1" class="w-full h-12 rounded-xl">
+                        </div>
+                        <div id="bs-image-section" class="hidden">
+                            <label class="block text-sm font-medium text-gray-400 mb-2">Image URL</label>
+                            <input type="text" id="boxImageUrl" placeholder="https://example.com/image.jpg" class="text-input mb-2">
+                            <button onclick="loadDefaultBsImage()" class="text-xs text-indigo-400 hover:text-indigo-300 underline">Use default image</button>
+                        </div>
+                        <div class="space-y-5 pt-4 border-t border-white/5">
+                            <h3 class="font-semibold text-gray-300 text-sm uppercase tracking-wider">Shadow Properties</h3>
+                            <div>
+                                <div class="flex justify-between mb-2"><label class="text-sm font-medium text-gray-400">Horizontal Offset</label><span class="value-badge" id="hVal">10px</span></div>
+                                <input type="range" id="hOffset" min="-50" max="50" value="10" class="w-full">
+                            </div>
+                            <div>
+                                <div class="flex justify-between mb-2"><label class="text-sm font-medium text-gray-400">Vertical Offset</label><span class="value-badge" id="vVal">10px</span></div>
+                                <input type="range" id="vOffset" min="-50" max="50" value="10" class="w-full">
+                            </div>
+                            <div>
+                                <div class="flex justify-between mb-2"><label class="text-sm font-medium text-gray-400">Blur Radius</label><span class="value-badge" id="bVal">15px</span></div>
+                                <input type="range" id="blur" min="0" max="100" value="15" class="w-full">
+                            </div>
+                            <div>
+                                <div class="flex justify-between mb-2"><label class="text-sm font-medium text-gray-400">Spread Radius</label><span class="value-badge" id="sVal">0px</span></div>
+                                <input type="range" id="spread" min="-50" max="50" value="0" class="w-full">
+                            </div>
+                            <div>
+                                <div class="flex justify-between mb-2"><label class="text-sm font-medium text-gray-400">Opacity</label><span class="value-badge" id="oVal">50%</span></div>
+                                <input type="range" id="shadowOpacity" min="0" max="100" value="50" class="w-full">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-400 mb-2">Shadow Color</label>
+                                <input type="color" id="shadowColor" value="#000000" class="w-full h-10 rounded-xl">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="w-full lg:w-7/12 p-8 flex flex-col items-center justify-center bg-gradient-to-br from-slate-900/50 to-slate-800/30">
+                    <div class="preview-glow mb-10">
+                        <div id="previewBox" class="w-56 h-56 rounded-2xl transition-all duration-300 ease-out border border-white/10 flex items-center justify-center overflow-hidden" style="background-color: #6366f1; box-shadow: 10px 10px 15px 0px rgba(0, 0, 0, 0.5);">
+                            <img id="previewBoxImg" src="" alt="" class="w-full h-full object-cover hidden">
+                        </div>
+                    </div>
+                    <div class="w-full code-block rounded-xl p-5">
+                        <div class="flex items-center gap-2 mb-3">
+                            <div class="w-3 h-3 rounded-full bg-red-500/80"></div>
+                            <div class="w-3 h-3 rounded-full bg-yellow-500/80"></div>
+                            <div class="w-3 h-3 rounded-full bg-green-500/80"></div>
+                            <span class="ml-2 text-xs text-gray-500 font-mono">CSS</span>
+                        </div>
+                        <p id="cssCode" class="text-sm font-mono text-emerald-400 break-all leading-relaxed">box-shadow: 10px 10px 15px 0px rgba(0, 0, 0, 0.5);</p>
+                        <button id="copyBtn" class="copy-btn mt-4 w-full text-white font-semibold py-3 px-4 rounded-xl text-sm">Copy CSS</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gradient Tool -->
+        <div id="gradient-tool" class="tool-view">
+            <div class="flex items-center gap-4 mb-6">
+                <button onclick="goHome()" class="back-btn flex items-center gap-2 px-4 py-2 rounded-xl text-sm text-gray-300">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                    Back
+                </button>
+                <h2 class="text-2xl font-bold text-white">Gradient Generator</h2>
+            </div>
+            <div class="glass-card rounded-2xl overflow-hidden flex flex-col lg:flex-row">
+                <div class="w-full lg:w-5/12 p-8 border-b lg:border-b-0 lg:border-r border-white/5">
+                    <div class="section-label mb-2">Color Blend</div>
+                    <div class="space-y-6">
+                        <div class="flex gap-4">
+                            <div class="flex-1"><label class="block text-sm font-medium text-gray-400 mb-2">Color 1</label><input type="color" id="color1" value="#ec4899" class="w-full h-14 rounded-xl"></div>
+                            <div class="flex-1"><label class="block text-sm font-medium text-gray-400 mb-2">Color 2</label><input type="color" id="color2" value="#8b5cf6" class="w-full h-14 rounded-xl"></div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-400 mb-2">Gradient Direction</label>
+                            <select id="direction" class="w-full">
+                                <option value="to right">To Right →</option><option value="to left">To Left ←</option><option value="to bottom">To Bottom ↓</option><option value="to top">To Top ↑</option><option value="to bottom right">To Bottom Right ↘</option><option value="to top right">To Top Right ↗</option><option value="to bottom left">To Bottom Left ↙</option><option value="to top left">To Top Left ↖</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-400 mb-2">Gradient Type</label>
+                            <select id="gradientType" class="w-full"><option value="linear">Linear Gradient</option><option value="radial">Radial Gradient</option></select>
+                        </div>
+                    </div>
+                </div>
+                <div class="w-full lg:w-7/12 p-8 flex flex-col items-center justify-center bg-gradient-to-br from-slate-900/50 to-slate-800/30">
+                    <div class="preview-glow mb-10 w-full max-w-md">
+                        <div id="gradientPreview" class="w-full h-64 rounded-2xl transition-all duration-300 ease-out border border-white/10" style="background: linear-gradient(to right, #ec4899, #8b5cf6);"></div>
+                    </div>
+                    <div class="w-full code-block rounded-xl p-5">
+                        <div class="flex items-center gap-2 mb-3">
+                            <div class="w-3 h-3 rounded-full bg-red-500/80"></div><div class="w-3 h-3 rounded-full bg-yellow-500/80"></div><div class="w-3 h-3 rounded-full bg-green-500/80"></div>
+                            <span class="ml-2 text-xs text-gray-500 font-mono">CSS</span>
+                        </div>
+                        <p id="gradientCodeText" class="text-sm font-mono text-emerald-400 break-all leading-relaxed">background: linear-gradient(to right, #ec4899, #8b5cf6);</p>
+                        <button id="copyGradientBtn" class="copy-btn mt-4 w-full text-white font-semibold py-3 px-4 rounded-xl text-sm">Copy CSS</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Border Radius Tool -->
+        <div id="border-radius-tool" class="tool-view">
+            <div class="flex items-center gap-4 mb-6">
+                <button onclick="goHome()" class="back-btn flex items-center gap-2 px-4 py-2 rounded-xl text-sm text-gray-300">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                    Back
+                </button>
+                <h2 class="text-2xl font-bold text-white">Border Radius</h2>
+            </div>
+            <div class="glass-card rounded-2xl overflow-hidden flex flex-col lg:flex-row">
+                <div class="w-full lg:w-5/12 p-8 border-b lg:border-b-0 lg:border-r border-white/5">
+                    <div class="section-label mb-2">Shape Editor</div>
+                    <div class="space-y-5">
+                        <div><div class="flex justify-between mb-2"><label class="text-sm font-medium text-gray-400">Top Left</label><span class="value-badge" id="tlVal">0px</span></div><input type="range" id="tlRadius" min="0" max="200" value="0" class="w-full"></div>
+                        <div><div class="flex justify-between mb-2"><label class="text-sm font-medium text-gray-400">Top Right</label><span class="value-badge" id="trVal">0px</span></div><input type="range" id="trRadius" min="0" max="200" value="0" class="w-full"></div>
+                        <div><div class="flex justify-between mb-2"><label class="text-sm font-medium text-gray-400">Bottom Right</label><span class="value-badge" id="brVal">0px</span></div><input type="range" id="brRadius" min="0" max="200" value="0" class="w-full"></div>
+                        <div><div class="flex justify-between mb-2"><label class="text-sm font-medium text-gray-400">Bottom Left</label><span class="value-badge" id="blVal">0px</span></div><input type="range" id="blRadius" min="0" max="200" value="0" class="w-full"></div>
+                        <div class="pt-4 border-t border-white/5"><label class="block text-sm font-medium text-gray-400 mb-2">Box Color</label><input type="color" id="radiusColor" value="#3b82f6" class="w-full h-10 rounded-xl"></div>
+                    </div>
+                </div>
+                <div class="w-full lg:w-7/12 p-8 flex flex-col items-center justify-center bg-gradient-to-br from-slate-900/50 to-slate-800/30">
+                    <div class="preview-glow mb-10">
+                        <div id="radiusPreview" class="w-56 h-56 transition-all duration-300 ease-out border-4 border-white/20 shadow-2xl" style="border-radius: 0px 0px 0px 0px; background: linear-gradient(135deg, #3b82f6, #8b5cf6);"></div>
+                    </div>
+                    <div class="w-full code-block rounded-xl p-5">
+                        <div class="flex items-center gap-2 mb-3"><div class="w-3 h-3 rounded-full bg-red-500/80"></div><div class="w-3 h-3 rounded-full bg-yellow-500/80"></div><div class="w-3 h-3 rounded-full bg-green-500/80"></div><span class="ml-2 text-xs text-gray-500 font-mono">CSS</span></div>
+                        <p id="radiusCodeText" class="text-sm font-mono text-emerald-400 break-all leading-relaxed">border-radius: 0px 0px 0px 0px;</p>
+                        <button id="copyRadiusBtn" class="copy-btn mt-4 w-full text-white font-semibold py-3 px-4 rounded-xl text-sm">Copy CSS</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Text Shadow Tool -->
+        <div id="text-shadow-tool" class="tool-view">
+            <div class="flex items-center gap-4 mb-6">
+                <button onclick="goHome()" class="back-btn flex items-center gap-2 px-4 py-2 rounded-xl text-sm text-gray-300">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                    Back
+                </button>
+                <h2 class="text-2xl font-bold text-white">Text Shadow</h2>
+            </div>
+            <div class="glass-card rounded-2xl overflow-hidden flex flex-col lg:flex-row">
+                <div class="w-full lg:w-5/12 p-8 border-b lg:border-b-0 lg:border-r border-white/5">
+                    <div class="section-label mb-2">Typography Effects</div>
+                    <div class="space-y-5">
+                        <div><label class="block text-sm font-medium text-gray-400 mb-2">Preview Text</label><input type="text" id="tsText" value="Hello World" class="text-input"></div>
+                        <div><label class="block text-sm font-medium text-gray-400 mb-2">Text Color</label><input type="color" id="tsTextColor" value="#ffffff" class="w-full h-10 rounded-xl"></div>
+                        <div><div class="flex justify-between mb-2"><label class="text-sm font-medium text-gray-400">Horizontal Offset</label><span class="value-badge" id="tshVal">2px</span></div><input type="range" id="tsHOffset" min="-30" max="30" value="2" class="w-full"></div>
+                        <div><div class="flex justify-between mb-2"><label class="text-sm font-medium text-gray-400">Vertical Offset</label><span class="value-badge" id="tsvVal">2px</span></div><input type="range" id="tsVOffset" min="-30" max="30" value="2" class="w-full"></div>
+                        <div><div class="flex justify-between mb-2"><label class="text-sm font-medium text-gray-400">Blur Radius</label><span class="value-badge" id="tsbVal">4px</span></div><input type="range" id="tsBlur" min="0" max="50" value="4" class="w-full"></div>
+                        <div><label class="block text-sm font-medium text-gray-400 mb-2">Shadow Color</label><input type="color" id="tsColor" value="#000000" class="w-full h-10 rounded-xl"></div>
+                    </div>
+                </div>
+                <div class="w-full lg:w-7/12 p-8 flex flex-col items-center justify-center bg-gradient-to-br from-slate-900/50 to-slate-800/30">
+                    <div class="preview-glow mb-10 w-full text-center">
+                        <div id="tsPreview" class="text-5xl md:text-6xl font-black text-white transition-all duration-300" style="text-shadow: 2px 2px 4px rgba(0,0,0,1);">Hello World</div>
+                    </div>
+                    <div class="w-full code-block rounded-xl p-5">
+                        <div class="flex items-center gap-2 mb-3"><div class="w-3 h-3 rounded-full bg-red-500/80"></div><div class="w-3 h-3 rounded-full bg-yellow-500/80"></div><div class="w-3 h-3 rounded-full bg-green-500/80"></div><span class="ml-2 text-xs text-gray-500 font-mono">CSS</span></div>
+                        <p id="tsCodeText" class="text-sm font-mono text-emerald-400 break-all leading-relaxed">text-shadow: 2px 2px 4px rgba(0, 0, 0, 1);</p>
+                        <button id="copyTsBtn" class="copy-btn mt-4 w-full text-white font-semibold py-3 px-4 rounded-xl text-sm">Copy CSS</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Glassmorphism Tool -->
+        <div id="glassmorphism-tool" class="tool-view">
+            <div class="flex items-center gap-4 mb-6">
+                <button onclick="goHome()" class="back-btn flex items-center gap-2 px-4 py-2 rounded-xl text-sm text-gray-300">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                    Back
+                </button>
+                <h2 class="text-2xl font-bold text-white">Glassmorphism</h2>
+            </div>
+            <div class="glass-card rounded-2xl overflow-hidden flex flex-col lg:flex-row">
+                <div class="w-full lg:w-5/12 p-8 border-b lg:border-b-0 lg:border-r border-white/5">
+                    <div class="section-label mb-2">Frosted Glass UI</div>
+                    <div class="space-y-5">
+                        <div><div class="flex justify-between mb-2"><label class="text-sm font-medium text-gray-400">Blur Strength</label><span class="value-badge" id="gmBlurVal">16px</span></div><input type="range" id="gmBlur" min="0" max="50" value="16" class="w-full"></div>
+                        <div><div class="flex justify-between mb-2"><label class="text-sm font-medium text-gray-400">Opacity</label><span class="value-badge" id="gmOpacityVal">25%</span></div><input type="range" id="gmOpacity" min="0" max="100" value="25" class="w-full"></div>
+                        <div><div class="flex justify-between mb-2"><label class="text-sm font-medium text-gray-400">Saturation</label><span class="value-badge" id="gmSatVal">180%</span></div><input type="range" id="gmSaturation" min="100" max="200" value="180" class="w-full"></div>
+                        <div><label class="block text-sm font-medium text-gray-400 mb-2">Background Color Tint</label><input type="color" id="gmColor" value="#ffffff" class="w-full h-10 rounded-xl"></div>
+                        <div><div class="flex justify-between mb-2"><label class="text-sm font-medium text-gray-400">Border Opacity</label><span class="value-badge" id="gmBorderVal">18%</span></div><input type="range" id="gmBorderOpacity" min="0" max="100" value="18" class="w-full"></div>
+                        <div><div class="flex justify-between mb-2"><label class="text-sm font-medium text-gray-400">Border Radius</label><span class="value-badge" id="gmRadiusVal">16px</span></div><input type="range" id="gmRadius" min="0" max="50" value="16" class="w-full"></div>
+                    </div>
+                </div>
+                <div class="w-full lg:w-7/12 p-8 flex flex-col items-center justify-center relative overflow-hidden" style="background: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&q=80') center/cover;">
+                    <div class="absolute inset-0 bg-black/20"></div>
+                    <div class="preview-glow mb-10 relative z-10">
+                        <div id="gmPreview" class="w-72 h-48 flex items-center justify-center text-white font-bold text-xl border transition-all duration-300" style="background: rgba(255, 255, 255, 0.25); backdrop-filter: blur(16px) saturate(180%); -webkit-backdrop-filter: blur(16px) saturate(180%); border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.18);">Glass Card</div>
+                    </div>
+                    <div class="w-full code-block rounded-xl p-5 relative z-10">
+                        <div class="flex items-center gap-2 mb-3"><div class="w-3 h-3 rounded-full bg-red-500/80"></div><div class="w-3 h-3 rounded-full bg-yellow-500/80"></div><div class="w-3 h-3 rounded-full bg-green-500/80"></div><span class="ml-2 text-xs text-gray-500 font-mono">CSS</span></div>
+                        <p id="gmCodeText" class="text-sm font-mono text-emerald-400 break-all leading-relaxed">background: rgba(255, 255, 255, 0.25);<br>backdrop-filter: blur(16px) saturate(180%);<br>-webkit-backdrop-filter: blur(16px) saturate(180%);<br>border-radius: 16px;<br>border: 1px solid rgba(255, 255, 255, 0.18);</p>
+                        <button id="copyGmBtn" class="copy-btn mt-4 w-full text-white font-semibold py-3 px-4 rounded-xl text-sm">Copy CSS</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Transform Tool -->
+        <div id="transform-tool" class="tool-view">
+            <div class="flex items-center gap-4 mb-6">
+                <button onclick="goHome()" class="back-btn flex items-center gap-2 px-4 py-2 rounded-xl text-sm text-gray-300">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                    Back
+                </button>
+                <h2 class="text-2xl font-bold text-white">CSS Transform</h2>
+            </div>
+            <div class="glass-card rounded-2xl overflow-hidden flex flex-col lg:flex-row">
+                <div class="w-full lg:w-5/12 p-8 border-b lg:border-b-0 lg:border-r border-white/5">
+                    <div class="section-label mb-2">2D Transformations</div>
+                    <div class="space-y-5">
+                        <div><div class="flex justify-between mb-2"><label class="text-sm font-medium text-gray-400">Rotate (deg)</label><span class="value-badge" id="trRotVal">0°</span></div><input type="range" id="trRotate" min="-360" max="360" value="0" class="w-full"></div>
+                        <div><div class="flex justify-between mb-2"><label class="text-sm font-medium text-gray-400">Scale</label><span class="value-badge" id="trScaleVal">1.0</span></div><input type="range" id="trScale" min="0.1" max="3" step="0.1" value="1" class="w-full"></div>
+                        <div><div class="flex justify-between mb-2"><label class="text-sm font-medium text-gray-400">Skew X (deg)</label><span class="value-badge" id="trSkewXVal">0°</span></div><input type="range" id="trSkewX" min="-90" max="90" value="0" class="w-full"></div>
+                        <div><div class="flex justify-between mb-2"><label class="text-sm font-medium text-gray-400">Skew Y (deg)</label><span class="value-badge" id="trSkewYVal">0°</span></div><input type="range" id="trSkewY" min="-90" max="90" value="0" class="w-full"></div>
+                        <div><div class="flex justify-between mb-2"><label class="text-sm font-medium text-gray-400">Translate X (px)</label><span class="value-badge" id="trTransXVal">0px</span></div><input type="range" id="trTransX" min="-100" max="100" value="0" class="w-full"></div>
+                        <div><div class="flex justify-between mb-2"><label class="text-sm font-medium text-gray-400">Translate Y (px)</label><span class="value-badge" id="trTransYVal">0px</span></div><input type="range" id="trTransY" min="-100" max="100" value="0" class="w-full"></div>
+                        <div><label class="block text-sm font-medium text-gray-400 mb-2">Box Color</label><input type="color" id="trColor" value="#10b981" class="w-full h-10 rounded-xl"></div>
+                    </div>
+                </div>
+                <div class="w-full lg:w-7/12 p-8 flex flex-col items-center justify-center bg-gradient-to-br from-slate-900/50 to-slate-800/30">
+                    <div class="preview-glow mb-10">
+                        <div id="trPreview" class="w-56 h-56 rounded-2xl flex items-center justify-center text-white font-bold text-lg border border-white/10 transition-all duration-300" style="background-color: #10b981; transform: rotate(0deg) scale(1) skew(0deg, 0deg) translate(0px, 0px);">Transform</div>
+                    </div>
+                    <div class="w-full code-block rounded-xl p-5">
+                        <div class="flex items-center gap-2 mb-3"><div class="w-3 h-3 rounded-full bg-red-500/80"></div><div class="w-3 h-3 rounded-full bg-yellow-500/80"></div><div class="w-3 h-3 rounded-full bg-green-500/80"></div><span class="ml-2 text-xs text-gray-500 font-mono">CSS</span></div>
+                        <p id="trCodeText" class="text-sm font-mono text-emerald-400 break-all leading-relaxed">transform: rotate(0deg) scale(1) skew(0deg, 0deg) translate(0px, 0px);</p>
+                        <button id="copyTrBtn" class="copy-btn mt-4 w-full text-white font-semibold py-3 px-4 rounded-xl text-sm">Copy CSS</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter Tool -->
+        <div id="filter-tool" class="tool-view">
+            <div class="flex items-center gap-4 mb-6">
+                <button onclick="goHome()" class="back-btn flex items-center gap-2 px-4 py-2 rounded-xl text-sm text-gray-300">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                    Back
+                </button>
+                <h2 class="text-2xl font-bold text-white">CSS Filter</h2>
+            </div>
+            <div class="glass-card rounded-2xl overflow-hidden flex flex-col lg:flex-row">
+                <div class="w-full lg:w-5/12 p-8 border-b lg:border-b-0 lg:border-r border-white/5">
+                    <div class="section-label mb-2">Visual Effects</div>
+                    <div class="space-y-5">
+                        <div><div class="flex justify-between mb-2"><label class="text-sm font-medium text-gray-400">Blur (px)</label><span class="value-badge" id="fBlurVal">0px</span></div><input type="range" id="fBlur" min="0" max="20" value="0" class="w-full"></div>
+                        <div><div class="flex justify-between mb-2"><label class="text-sm font-medium text-gray-400">Brightness (%)</label><span class="value-badge" id="fBrightVal">100%</span></div><input type="range" id="fBright" min="0" max="200" value="100" class="w-full"></div>
+                        <div><div class="flex justify-between mb-2"><label class="text-sm font-medium text-gray-400">Contrast (%)</label><span class="value-badge" id="fContrastVal">100%</span></div><input type="range" id="fContrast" min="0" max="200" value="100" class="w-full"></div>
+                        <div><div class="flex justify-between mb-2"><label class="text-sm font-medium text-gray-400">Grayscale (%)</label><span class="value-badge" id="fGrayVal">0%</span></div><input type="range" id="fGray" min="0" max="100" value="0" class="w-full"></div>
+                        <div><div class="flex justify-between mb-2"><label class="text-sm font-medium text-gray-400">Hue Rotate (deg)</label><span class="value-badge" id="fHueVal">0°</span></div><input type="range" id="fHue" min="0" max="360" value="0" class="w-full"></div>
+                        <div><div class="flex justify-between mb-2"><label class="text-sm font-medium text-gray-400">Saturate (%)</label><span class="value-badge" id="fSatVal">100%</span></div><input type="range" id="fSat" min="0" max="200" value="100" class="w-full"></div>
+                        <div><div class="flex justify-between mb-2"><label class="text-sm font-medium text-gray-400">Sepia (%)</label><span class="value-badge" id="fSepiaVal">0%</span></div><input type="range" id="fSepia" min="0" max="100" value="0" class="w-full"></div>
+                    </div>
+                </div>
+                <div class="w-full lg:w-7/12 p-8 flex flex-col items-center justify-center bg-gradient-to-br from-slate-900/50 to-slate-800/30">
+                    <div class="preview-glow mb-10">
+                        <div id="fPreview" class="w-56 h-56 rounded-2xl border border-white/10 overflow-hidden transition-all duration-300">
+                            <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&q=80" alt="Landscape" class="w-full h-full object-cover" style="filter: blur(0px) brightness(100%) contrast(100%) grayscale(0%) hue-rotate(0deg) saturate(100%) sepia(0%);">
+                        </div>
+                    </div>
+                    <div class="w-full code-block rounded-xl p-5">
+                        <div class="flex items-center gap-2 mb-3"><div class="w-3 h-3 rounded-full bg-red-500/80"></div><div class="w-3 h-3 rounded-full bg-yellow-500/80"></div><div class="w-3 h-3 rounded-full bg-green-500/80"></div><span class="ml-2 text-xs text-gray-500 font-mono">CSS</span></div>
+                        <p id="fCodeText" class="text-sm font-mono text-emerald-400 break-all leading-relaxed">filter: blur(0px) brightness(100%) contrast(100%) grayscale(0%) hue-rotate(0deg) saturate(100%) sepia(0%);</p>
+                        <button id="copyFBtn" class="copy-btn mt-4 w-full text-white font-semibold py-3 px-4 rounded-xl text-sm">Copy CSS</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="mt-12 pb-8 text-center">
+        <p class="text-gray-500 text-sm">MarsaTv 2026 - Built with modern web technologies for developers.</p>
+    </footer>
+
+    <script>
+        // Navigation
+        function openTool(toolId) {
+            document.getElementById('home-view').classList.add('hidden');
+            document.querySelectorAll('.tool-view').forEach(t => t.classList.remove('active'));
+            document.getElementById(toolId).classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        function goHome() {
+            document.querySelectorAll('.tool-view').forEach(t => t.classList.remove('active'));
+            document.getElementById('home-view').classList.remove('hidden');
+            window.scrollTo(0, 0);
+        }
+
+        // Copy function
+        function copyToClipboard(buttonElement, textToCopy) {
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                const originalText = buttonElement.textContent;
+                buttonElement.textContent = 'Copied!';
+                buttonElement.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+                setTimeout(() => {
+                    buttonElement.textContent = originalText;
+                    buttonElement.style.background = '';
+                }, 2000);
+            });
+        }
+
+        function hexToRgba(hex, alpha) {
+            const r = parseInt(hex.slice(1, 3), 16);
+            const g = parseInt(hex.slice(3, 5), 16);
+            const b = parseInt(hex.slice(5, 7), 16);
+            return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+        }
+
+        // ==================== BOX SHADOW ====================
+        let bsMode = 'color';
+        const hOffset = document.getElementById('hOffset'), vOffset = document.getElementById('vOffset');
+        const blur = document.getElementById('blur'), spread = document.getElementById('spread');
+        const shadowOpacity = document.getElementById('shadowOpacity'), shadowColor = document.getElementById('shadowColor');
+        const previewBox = document.getElementById('previewBox'), previewBoxImg = document.getElementById('previewBoxImg');
+        const cssCode = document.getElementById('cssCode');
+        const boxColor = document.getElementById('boxColor');
+        const boxImageUrl = document.getElementById('boxImageUrl');
+        const hVal = document.getElementById('hVal'), vVal = document.getElementById('vVal');
+        const bVal = document.getElementById('bVal'), sVal = document.getElementById('sVal'), oVal = document.getElementById('oVal');
+
+        function setBsMode(mode) {
+            bsMode = mode;
+            document.getElementById('bs-mode-color').classList.toggle('active', mode === 'color');
+            document.getElementById('bs-mode-image').classList.toggle('active', mode === 'image');
+            document.getElementById('bs-color-section').classList.toggle('hidden', mode !== 'color');
+            document.getElementById('bs-image-section').classList.toggle('hidden', mode !== 'image');
+            if (mode === 'color') {
+                previewBoxImg.classList.add('hidden');
+                previewBox.style.backgroundColor = boxColor.value;
+            } else {
+                previewBoxImg.classList.remove('hidden');
+                previewBox.style.backgroundColor = 'transparent';
+                if (!previewBoxImg.src) loadDefaultBsImage();
+            }
+            updateShadow();
+        }
+
+        function loadDefaultBsImage() {
+            const defaultUrl = 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&q=80';
+            boxImageUrl.value = defaultUrl;
+            previewBoxImg.src = defaultUrl;
+            previewBoxImg.classList.remove('hidden');
+            previewBox.style.backgroundColor = 'transparent';
+            updateShadow();
+        }
+
+        boxImageUrl.addEventListener('input', () => {
+            if (boxImageUrl.value) {
+                previewBoxImg.src = boxImageUrl.value;
+                previewBoxImg.classList.remove('hidden');
+                previewBox.style.backgroundColor = 'transparent';
+            }
+            updateShadow();
+        });
+
+        function updateShadow() {
+            hVal.textContent = hOffset.value + 'px';
+            vVal.textContent = vOffset.value + 'px';
+            bVal.textContent = blur.value + 'px';
+            sVal.textContent = spread.value + 'px';
+            oVal.textContent = shadowOpacity.value + '%';
+            const alpha = shadowOpacity.value / 100;
+            const rgba = hexToRgba(shadowColor.value, alpha);
+            const shadowString = `${hOffset.value}px ${vOffset.value}px ${blur.value}px ${spread.value}px ${rgba}`;
+            previewBox.style.boxShadow = shadowString;
+            cssCode.textContent = `box-shadow: ${shadowString};`;
+        }
+        [hOffset, vOffset, blur, spread, shadowOpacity, shadowColor].forEach(input => input.addEventListener('input', updateShadow));
+        boxColor.addEventListener('input', () => { if (bsMode === 'color') previewBox.style.backgroundColor = boxColor.value; });
+        document.getElementById('copyBtn').addEventListener('click', function() { copyToClipboard(this, cssCode.textContent.trim()); });
+
+        // ==================== GRADIENT ====================
+        const color1 = document.getElementById('color1'), color2 = document.getElementById('color2');
+        const direction = document.getElementById('direction'), gradientType = document.getElementById('gradientType');
+        const gradientPreview = document.getElementById('gradientPreview'), gradientCodeText = document.getElementById('gradientCodeText');
+
+        function updateGradient() {
+            let gradientString;
+            if (gradientType.value === 'radial') {
+                gradientString = `radial-gradient(circle, ${color1.value}, ${color2.value})`;
+            } else {
+                gradientString = `linear-gradient(${direction.value}, ${color1.value}, ${color2.value})`;
+            }
+            gradientPreview.style.background = gradientString;
+            gradientCodeText.textContent = `background: ${gradientString};`;
+        }
+        [color1, color2, direction, gradientType].forEach(input => input.addEventListener('input', updateGradient));
+        document.getElementById('copyGradientBtn').addEventListener('click', function() { copyToClipboard(this, gradientCodeText.textContent.trim()); });
+
+        // ==================== BORDER RADIUS ====================
+        const tlRadius = document.getElementById('tlRadius'), trRadius = document.getElementById('trRadius');
+        const brRadius = document.getElementById('brRadius'), blRadius = document.getElementById('blRadius');
+        const tlVal = document.getElementById('tlVal'), trVal = document.getElementById('trVal');
+        const brVal = document.getElementById('brVal'), blVal = document.getElementById('blVal');
+        const radiusPreview = document.getElementById('radiusPreview'), radiusCodeText = document.getElementById('radiusCodeText');
+        const radiusColor = document.getElementById('radiusColor');
+
+        function updateRadius() {
+            tlVal.textContent = tlRadius.value + 'px';
+            trVal.textContent = trRadius.value + 'px';
+            brVal.textContent = brRadius.value + 'px';
+            blVal.textContent = blRadius.value + 'px';
+            const radiusString = `${tlRadius.value}px ${trRadius.value}px ${brRadius.value}px ${blRadius.value}px`;
+            radiusPreview.style.borderRadius = radiusString;
+            radiusCodeText.textContent = `border-radius: ${radiusString};`;
+        }
+        [tlRadius, trRadius, brRadius, blRadius].forEach(input => input.addEventListener('input', updateRadius));
+        radiusColor.addEventListener('input', () => {
+            radiusPreview.style.background = `linear-gradient(135deg, ${radiusColor.value}, #8b5cf6)`;
+        });
+        document.getElementById('copyRadiusBtn').addEventListener('click', function() { copyToClipboard(this, radiusCodeText.textContent.trim()); });
+
+        // ==================== TEXT SHADOW ====================
+        const tsText = document.getElementById('tsText'), tsTextColor = document.getElementById('tsTextColor');
+        const tsHOffset = document.getElementById('tsHOffset'), tsVOffset = document.getElementById('tsVOffset');
+        const tsBlur = document.getElementById('tsBlur'), tsColor = document.getElementById('tsColor');
+        const tsPreview = document.getElementById('tsPreview'), tsCodeText = document.getElementById('tsCodeText');
+        const tshVal = document.getElementById('tshVal'), tsvVal = document.getElementById('tsvVal'), tsbVal = document.getElementById('tsbVal');
+
+        function updateTextShadow() {
+            tshVal.textContent = tsHOffset.value + 'px';
+            tsvVal.textContent = tsVOffset.value + 'px';
+            tsbVal.textContent = tsBlur.value + 'px';
+            tsPreview.textContent = tsText.value;
+            tsPreview.style.color = tsTextColor.value;
+            const shadow = `${tsHOffset.value}px ${tsVOffset.value}px ${tsBlur.value}px ${tsColor.value}`;
+            tsPreview.style.textShadow = shadow;
+            tsCodeText.textContent = `text-shadow: ${shadow};`;
+        }
+        [tsText, tsTextColor, tsHOffset, tsVOffset, tsBlur, tsColor].forEach(input => input.addEventListener('input', updateTextShadow));
+        document.getElementById('copyTsBtn').addEventListener('click', function() { copyToClipboard(this, tsCodeText.textContent.trim()); });
+
+        // ==================== GLASSMORPHISM ====================
+        const gmBlur = document.getElementById('gmBlur'), gmOpacity = document.getElementById('gmOpacity');
+        const gmSaturation = document.getElementById('gmSaturation'), gmColor = document.getElementById('gmColor');
+        const gmBorderOpacity = document.getElementById('gmBorderOpacity'), gmRadius = document.getElementById('gmRadius');
+        const gmPreview = document.getElementById('gmPreview'), gmCodeText = document.getElementById('gmCodeText');
+        const gmBlurVal = document.getElementById('gmBlurVal'), gmOpacityVal = document.getElementById('gmOpacityVal');
+        const gmSatVal = document.getElementById('gmSatVal'), gmBorderVal = document.getElementById('gmBorderVal'), gmRadiusVal = document.getElementById('gmRadiusVal');
+
+        function hexToRgb(hex) {
+            const r = parseInt(hex.slice(1, 3), 16);
+            const g = parseInt(hex.slice(3, 5), 16);
+            const b = parseInt(hex.slice(5, 7), 16);
+            return `${r}, ${g}, ${b}`;
+        }
+
+        function updateGlassmorphism() {
+            gmBlurVal.textContent = gmBlur.value + 'px';
+            gmOpacityVal.textContent = gmOpacity.value + '%';
+            gmSatVal.textContent = gmSaturation.value + '%';
+            gmBorderVal.textContent = gmBorderOpacity.value + '%';
+            gmRadiusVal.textContent = gmRadius.value + 'px';
+            const rgb = hexToRgb(gmColor.value);
+            const bg = `rgba(${rgb}, ${gmOpacity.value / 100})`;
+            const blurVal = `blur(${gmBlur.value}px) saturate(${gmSaturation.value}%)`;
+            const border = `1px solid rgba(${rgb}, ${gmBorderOpacity.value / 100})`;
+            gmPreview.style.background = bg;
+            gmPreview.style.backdropFilter = blurVal;
+            gmPreview.style.webkitBackdropFilter = blurVal;
+            gmPreview.style.borderRadius = gmRadius.value + 'px';
+            gmPreview.style.border = border;
+            gmCodeText.innerHTML = `background: ${bg};<br>backdrop-filter: ${blurVal};<br>-webkit-backdrop-filter: ${blurVal};<br>border-radius: ${gmRadius.value}px;<br>border: ${border};`;
+        }
+        [gmBlur, gmOpacity, gmSaturation, gmColor, gmBorderOpacity, gmRadius].forEach(input => input.addEventListener('input', updateGlassmorphism));
+        document.getElementById('copyGmBtn').addEventListener('click', function() { copyToClipboard(this, gmCodeText.textContent.replace(/<br>/g, '\n').trim()); });
+
+        // ==================== TRANSFORM ====================
+        const trRotate = document.getElementById('trRotate'), trScale = document.getElementById('trScale');
+        const trSkewX = document.getElementById('trSkewX'), trSkewY = document.getElementById('trSkewY');
+        const trTransX = document.getElementById('trTransX'), trTransY = document.getElementById('trTransY');
+        const trColor = document.getElementById('trColor');
+        const trPreview = document.getElementById('trPreview'), trCodeText = document.getElementById('trCodeText');
+        const trRotVal = document.getElementById('trRotVal'), trScaleVal = document.getElementById('trScaleVal');
+        const trSkewXVal = document.getElementById('trSkewXVal'), trSkewYVal = document.getElementById('trSkewYVal');
+        const trTransXVal = document.getElementById('trTransXVal'), trTransYVal = document.getElementById('trTransYVal');
+
+        function updateTransform() {
+            trRotVal.textContent = trRotate.value + '°';
+            trScaleVal.textContent = trScale.value;
+            trSkewXVal.textContent = trSkewX.value + '°';
+            trSkewYVal.textContent = trSkewY.value + '°';
+            trTransXVal.textContent = trTransX.value + 'px';
+            trTransYVal.textContent = trTransY.value + 'px';
+            const transform = `rotate(${trRotate.value}deg) scale(${trScale.value}) skew(${trSkewX.value}deg, ${trSkewY.value}deg) translate(${trTransX.value}px, ${trTransY.value}px)`;
+            trPreview.style.transform = transform;
+            trCodeText.textContent = `transform: ${transform};`;
+        }
+        [trRotate, trScale, trSkewX, trSkewY, trTransX, trTransY].forEach(input => input.addEventListener('input', updateTransform));
+        trColor.addEventListener('input', () => trPreview.style.backgroundColor = trColor.value);
+        document.getElementById('copyTrBtn').addEventListener('click', function() { copyToClipboard(this, trCodeText.textContent.trim()); });
+
+        // ==================== FILTER ====================
+        const fBlur = document.getElementById('fBlur'), fBright = document.getElementById('fBright');
+        const fContrast = document.getElementById('fContrast'), fGray = document.getElementById('fGray');
+        const fHue = document.getElementById('fHue'), fSat = document.getElementById('fSat'), fSepia = document.getElementById('fSepia');
+        const fPreview = document.getElementById('fPreview').querySelector('img'), fCodeText = document.getElementById('fCodeText');
+        const fBlurVal = document.getElementById('fBlurVal'), fBrightVal = document.getElementById('fBrightVal');
+        const fContrastVal = document.getElementById('fContrastVal'), fGrayVal = document.getElementById('fGrayVal');
+        const fHueVal = document.getElementById('fHueVal'), fSatVal = document.getElementById('fSatVal'), fSepiaVal = document.getElementById('fSepiaVal');
+
+        function updateFilter() {
+            fBlurVal.textContent = fBlur.value + 'px';
+            fBrightVal.textContent = fBright.value + '%';
+            fContrastVal.textContent = fContrast.value + '%';
+            fGrayVal.textContent = fGray.value + '%';
+            fHueVal.textContent = fHue.value + '°';
+            fSatVal.textContent = fSat.value + '%';
+            fSepiaVal.textContent = fSepia.value + '%';
+            const filter = `blur(${fBlur.value}px) brightness(${fBright.value}%) contrast(${fContrast.value}%) grayscale(${fGray.value}%) hue-rotate(${fHue.value}deg) saturate(${fSat.value}%) sepia(${fSepia.value}%)`;
+            fPreview.style.filter = filter;
+            fCodeText.textContent = `filter: ${filter};`;
+        }
+        [fBlur, fBright, fContrast, fGray, fHue, fSat, fSepia].forEach(input => input.addEventListener('input', updateFilter));
+        document.getElementById('copyFBtn').addEventListener('click', function() { copyToClipboard(this, fCodeText.textContent.trim()); });
+    </script>
+</body>
+</html>
